@@ -2,8 +2,8 @@ import { Product } from "@/interfaces";
 import { Button } from "./ui/button";
 interface ProductCardActionProps {
   product: Product;
-  open: boolean;
-  setOpen: (value: boolean) => void;
+  openEditDialog: boolean;
+  setOpenEditDialog: (value: boolean) => void;
   setSelectedProduct: (product: Product) => void;
   productIdx: number;
   setSelectedProductIdx: (idx: number) => void;
@@ -12,8 +12,8 @@ interface ProductCardActionProps {
 
 const ProductCardAction = ({
   product,
-  open,
-  setOpen,
+  openEditDialog,
+  setOpenEditDialog,
   setSelectedProduct,
   productIdx,
   setSelectedProductIdx,
@@ -21,7 +21,7 @@ const ProductCardAction = ({
 }: ProductCardActionProps) => {
   const onEdit = () => {
     setSelectedProduct(product);
-    setOpen(!open);
+    setOpenEditDialog(!openEditDialog);
     setSelectedProductIdx(productIdx);
   };
   const onDestroy = () => {

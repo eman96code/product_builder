@@ -2,8 +2,8 @@ import { Product } from "@/interfaces";
 import ProductCardAction from "./ProductCardAction";
 interface ProductProps {
   product: Product;
-  open: boolean;
-  setOpen: (value: boolean) => void;
+  openEditDialog: boolean;
+  setOpenEditDialog: (value: boolean) => void;
   setSelectedProduct: (product: Product) => void;
   productIdx: number;
   setSelectedProductIdx: (idx: number) => void;
@@ -12,8 +12,8 @@ interface ProductProps {
 
 const ProductCard = ({
   product,
-  open,
-  setOpen,
+  openEditDialog,
+  setOpenEditDialog,
   setSelectedProduct,
   productIdx,
   setSelectedProductIdx,
@@ -41,8 +41,8 @@ const ProductCard = ({
       </div>
       <ProductCardAction
         product={product}
-        open={open}
-        setOpen={setOpen}
+        openEditDialog={openEditDialog}
+        setOpenEditDialog={setOpenEditDialog}
         setSelectedProduct={setSelectedProduct}
         productIdx={productIdx}
         setSelectedProductIdx={setSelectedProductIdx}

@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "./ui/button";
+import AddProductDialog from "@/dialogs/AddProductDialog";
 const ProductCardList = () => {
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>({
     id: "",
@@ -44,14 +46,16 @@ const ProductCardList = () => {
   };
   return (
     <>
-      <Button className="mb-5">Add A New Product</Button>
+      <Button className="mb-5" onClick={() => setOpenAddDialog(!openAddDialog)}>
+        Add Product
+      </Button>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {productList.map((product, idx) => (
           <ProductCard
             key={product.id}
             product={product}
-            open={open}
-            setOpen={setOpen}
+            openEditDialog={openEditDialog}
+            setOpenEditDialog={setOpenEditDialog}
             setSelectedProduct={setSelectedProduct}
             productIdx={idx}
             setSelectedProductIdx={setSelectedProductIdx}
@@ -60,9 +64,15 @@ const ProductCardList = () => {
         ))}
       </div>
       <div>
+        <AddProductDialog
+          openAddDialog={openAddDialog}
+          setOpenAddDialog={setOpenAddDialog}
+          productList={productList}
+          setProductList={setProductList}
+        />
         <EditProductDialog
-          open={open}
-          setOpen={setOpen}
+          openEditDialog={openEditDialog}
+          setOpenEditDialog={setOpenEditDialog}
           selectedProduct={selectedProduct}
           setSelectedProduct={setSelectedProduct}
           selectedProductIdx={selectedProductIdx}
