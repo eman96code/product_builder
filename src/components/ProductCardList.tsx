@@ -25,7 +25,7 @@ const ProductCardList = () => {
     imgURL: "",
     title: "",
     description: "",
-    price: "",
+    price: 0,
     category: "",
   });
   const [selectedProductIdx, setSelectedProductIdx] = useState<number>(-1);

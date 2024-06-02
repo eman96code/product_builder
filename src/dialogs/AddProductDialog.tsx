@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,7 +28,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@/interfaces";
-// import { Description } from "@radix-ui/react-dialog";
 
 interface AddProductDialogProps {
   openAddDialog: boolean;
@@ -37,7 +37,6 @@ interface AddProductDialogProps {
 }
 
 const formSchema = z.object({
-  // id: z.string().uuid(),
   title: z
     .string()
     .min(5, {
@@ -63,6 +62,8 @@ const formSchema = z.object({
 const AddProductDialog = ({
   openAddDialog,
   setOpenAddDialog,
+  productList,
+  setProductList,
 }: AddProductDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,9 +77,8 @@ const AddProductDialog = ({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    setProductList([...productList, { id: uuid(), ...values }]);
+    setOpenAddDialog(false);
   };
   return (
     <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
