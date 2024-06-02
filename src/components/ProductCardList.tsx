@@ -26,6 +26,7 @@ const ProductCardList = () => {
     title: "",
     description: "",
     price: "",
+    category: "",
   });
   const [selectedProductIdx, setSelectedProductIdx] = useState<number>(-1);
   const [productList, setProductList] = useState<Product[]>(fakeProductList);

@@ -10,6 +10,7 @@ export const fakeProductList: Product[] = Array.from(
       title: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
       price: faker.commerce.price({ dec: 0, symbol: "$" }),
+      category: faker.lorem.word()
     };
   },
 );
