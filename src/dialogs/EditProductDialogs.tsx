@@ -95,13 +95,6 @@ const EditProductDialog = ({
               id="price"
               name="price"
               className="col-span-3"
-              value={Number(selectedProduct.price.replace("$", ""))}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  price: e.target.value,
-                })
-              }
             />
           </div>
           <div className="gap-4 space-y-1">
