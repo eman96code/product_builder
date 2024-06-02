@@ -9,8 +9,8 @@ export const fakeProductList: Product[] = Array.from(
       imgURL: faker.image.urlPicsumPhotos(),
       title: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
-      price: faker.commerce.price({ dec: 0, symbol: "$" }),
-      category: faker.lorem.word()
+      price: +faker.commerce.price({ dec: 0 }),
+      category: faker.lorem.word(),
     };
   },
 );
