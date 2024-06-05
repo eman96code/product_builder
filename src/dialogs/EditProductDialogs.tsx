@@ -9,16 +9,31 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
+  // SelectGroup,
   SelectItem,
-  SelectLabel,
+  // SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+// import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@/interfaces";
+import { useForm } from "react-hook-form";
+import { ProductFormSchema } from "@/validations/product";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Dispatch, useEffect } from "react";
+import { COLORS } from "@/constants/Colors";
+import ColoredCircle from "@/components/ui/coloredCircle";
 
 interface EditProductDialogProps {
   openEditDialog: boolean;
@@ -28,115 +43,193 @@ interface EditProductDialogProps {
   selectedProductIdx: number;
   productList: Product[];
   setProductList: (products: Product[]) => void;
+  tempSelectedColors: string[];
+  setTempSelectedColors: Dispatch<React.SetStateAction<string[]>>;
 }
 
 const EditProductDialog = ({
   openEditDialog,
   setOpenEditDialog,
   selectedProduct,
-  setSelectedProduct,
+  // setSelectedProduct,
   selectedProductIdx,
   productList,
   setProductList,
+  tempSelectedColors,
+  setTempSelectedColors,
 }: EditProductDialogProps) => {
-  const onSaveChanges = () => {
+  const form = useForm<z.infer<typeof ProductFormSchema>>({
+    resolver: zodResolver(ProductFormSchema),
+    defaultValues: {
+      title: selectedProduct.title,
+      imgURL: selectedProduct.imgURL || "",
+      price: selectedProduct.price || 0,
+      category: selectedProduct.category || "",
+      description: selectedProduct.description || "",
+    },
+  });
+
+  const onSaveChanges = (values: z.infer<typeof ProductFormSchema>) => {
     const updatedProductList = [...productList];
-    updatedProductList[selectedProductIdx] = { ...selectedProduct };
+    updatedProductList[selectedProductIdx] = {
+      ...selectedProduct,
+      colors: tempSelectedColors,
+      ...values,
+    };
     setProductList(updatedProductList);
     setOpenEditDialog(false);
+    setTempSelectedColors([]);
   };
+  useEffect(() => {
+    if (openEditDialog) {
+      form.reset({
+        title: selectedProduct.title,
+        imgURL: selectedProduct.imgURL || "",
+        price: selectedProduct.price || 0,
+        category: selectedProduct.category || "",
+        description: selectedProduct.description || "",
+      });
+    }
+  }, [openEditDialog, selectedProduct, form]);
+
   return (
     <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Product</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-2 py-4">
-          <div className="gap-4 space-y-1">
-            <Label htmlFor="title" className="text-right">
-              Title
-            </Label>
-            <Input
-              id="title"
-              name="title"
-              className="col-span-3"
-              value={selectedProduct.title}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  title: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="gap-4 space-y-1">
-            <Label htmlFor="img_url" className="text-right">
-              Image URL
-            </Label>
-            <Input
-              id="img_url"
-              name="img_url"
-              className="col-span-3"
-              value={selectedProduct.imgURL}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  imgURL: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="gap-4 space-y-1">
-            <Label htmlFor="price" className="text-right">
-              Price
-            </Label>
-            <Input
-              type="number"
-              id="price"
-              name="price"
-              className="col-span-3"
-            />
-          </div>
-          <div className="gap-4 space-y-1">
-            <Label htmlFor="category" className="text-right">
-              category
-            </Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Them" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Them</SelectLabel>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="gap-4 space-y-1">
-            <Label htmlFor="description" className="text-right">
-              Description
-            </Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={selectedProduct.description}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  description: e.target.value,
-                })
-              }
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={onSaveChanges}>
-            Save changes
-          </Button>
-        </DialogFooter>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSaveChanges)}>
+            <div className="grid gap-2 py-4">
+              <div className="gap-4 space-y-1">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="gap-4 space-y-1">
+                <FormField
+                  control={form.control}
+                  name="imgURL"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="gap-4 space-y-1">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="gap-4 space-y-1">
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a verified category to display" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="clothes">clothes</SelectItem>
+                          <SelectItem value="beauty">beauty</SelectItem>
+                          <SelectItem value="electronics">
+                            electronics
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="gap-4 space-y-1">
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div>
+                <label>Selected Colors</label>
+                <div className="flex flex-wrap items-center space-x-2">
+                  {!setTempSelectedColors.length
+                    ? "No Colors Selected"
+                    : tempSelectedColors.map((color) => (
+                        <span
+                          key={color}
+                          className="inline-block h-5 w-5 rounded-full text-xs"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                </div>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <label>Available Colors</label>
+                <div className="flex space-x-2 ">
+                  {COLORS.map((color) => (
+                    <ColoredCircle
+                      key={color}
+                      color={color}
+                      onClick={() => {
+                        if (tempSelectedColors.includes(color)) {
+                          setTempSelectedColors((prev) =>
+                            prev.filter((item) => item !== color),
+                          );
+                          return;
+                        }
+                        setTempSelectedColors((prev) => [...prev, color]);
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Edit</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

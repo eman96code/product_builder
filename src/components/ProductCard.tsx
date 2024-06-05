@@ -1,5 +1,6 @@
 import { Product } from "@/interfaces";
 import ProductCardAction from "./ProductCardAction";
+import ColoredCircle from "./ui/coloredCircle";
 interface ProductProps {
   product: Product;
   openEditDialog: boolean;
@@ -19,7 +20,7 @@ const ProductCard = ({
   setSelectedProductIdx,
   setOpenAlertDialog,
 }: ProductProps) => {
-  const { id, imgURL, title, description, price } = product;
+  const { id, imgURL, title, description, price, category, colors } = product;
   return (
     <div
       key={id}
@@ -30,14 +31,14 @@ const ProductCard = ({
       <p className="overflow-hidden text-ellipsis whitespace-nowrap">
         {description}
       </p>
-      <div>
-        <span>💙</span>
-        <span>💙</span>
-        <span>💙</span>
+      <div className="flex space-x-2">
+        {colors.map((color, idx) => (
+          <ColoredCircle key={idx} color={color} onClick={() => {}} />
+        ))}
       </div>
       <div className="flex items-center justify-between">
         <p>{price}</p>
-        <p>category</p>
+        <p>{category}</p>
       </div>
       <ProductCardAction
         product={product}

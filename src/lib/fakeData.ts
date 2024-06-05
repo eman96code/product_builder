@@ -1,3 +1,4 @@
+import { COLORS } from "@/constants/Colors";
 import { Product } from "@/interfaces";
 import { faker } from "@faker-js/faker";
 const product_length = 15;
@@ -11,6 +12,7 @@ export const fakeProductList: Product[] = Array.from(
       description: faker.commerce.productDescription(),
       price: +faker.commerce.price({ dec: 0 }),
       category: faker.lorem.word(),
+      colors: COLORS,
     };
   },
 );

@@ -15,6 +15,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "./ui/button";
 import AddProductDialog from "@/dialogs/AddProductDialog";
+import { COLORS } from "@/constants/Colors";
 const ProductCardList = () => {
   const { toast } = useToast();
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -27,9 +28,11 @@ const ProductCardList = () => {
     description: "",
     price: 0,
     category: "",
+    colors: COLORS,
   });
   const [selectedProductIdx, setSelectedProductIdx] = useState<number>(-1);
   const [productList, setProductList] = useState<Product[]>(fakeProductList);
+  const [tempSelectedColors, setTempSelectedColors] = useState<string[]>([]);
   const onConfirmDestroy = () => {
     const filteredProductList = productList.filter(
       (product) => product.id !== productList[selectedProductIdx]["id"],
@@ -70,6 +73,8 @@ const ProductCardList = () => {
           setOpenAddDialog={setOpenAddDialog}
           productList={productList}
           setProductList={setProductList}
+          tempSelectedColors={tempSelectedColors}
+          setTempSelectedColors={setTempSelectedColors}
         />
         <EditProductDialog
           openEditDialog={openEditDialog}
@@ -79,6 +84,8 @@ const ProductCardList = () => {
           selectedProductIdx={selectedProductIdx}
           productList={productList}
           setProductList={setProductList}
+          tempSelectedColors={tempSelectedColors}
+          setTempSelectedColors={setTempSelectedColors}
         />
         <AlertDialog open={openAlertDialog} onOpenChange={setOpenAlertDialog}>
           <AlertDialogContent>

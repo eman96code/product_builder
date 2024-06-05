@@ -28,45 +28,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@/interfaces";
+import { COLORS } from "@/constants/Colors";
+import ColoredCircle from "@/components/ui/coloredCircle";
+import { Dispatch, useEffect } from "react";
+import { ProductFormSchema } from "@/validations/product";
 
 interface AddProductDialogProps {
   openAddDialog: boolean;
   setOpenAddDialog: (value: boolean) => void;
   productList: Product[];
   setProductList: (products: Product[]) => void;
+  tempSelectedColors: string[];
+  setTempSelectedColors: Dispatch<React.SetStateAction<string[]>>;
 }
-
-const formSchema = z.object({
-  title: z
-    .string()
-    .min(5, {
-      message: "Title must be at least 5 characters.",
-    })
-    .max(50, {
-      message: "Title must not exceed 50 characters.",
-    }),
-  imgURL: z.string().url(),
-  price: z.coerce.number().gt(5),
-  description: z
-    .string()
-    .min(20, {
-      message: "description must be at least 20 characters.",
-    })
-    .max(500, {
-      message: "description must not exceed 500 characters.",
-    }),
-
-  category: z.string(),
-});
 
 const AddProductDialog = ({
   openAddDialog,
   setOpenAddDialog,
   productList,
   setProductList,
+  tempSelectedColors,
+  setTempSelectedColors,
 }: AddProductDialogProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof ProductFormSchema>>({
+    resolver: zodResolver(ProductFormSchema),
     defaultValues: {
       title: "",
       imgURL: "",
@@ -76,10 +61,25 @@ const AddProductDialog = ({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setProductList([...productList, { id: uuid(), ...values }]);
+  const onSubmit = (values: z.infer<typeof ProductFormSchema>) => {
+    setProductList([
+      { id: uuid(), colors: tempSelectedColors, ...values },
+      ...productList,
+    ]);
     setOpenAddDialog(false);
+    setTempSelectedColors([]);
   };
+  useEffect(() => {
+    if (openAddDialog) {
+      form.reset({
+        title: "",
+        imgURL: "",
+        price: 0,
+        category: "",
+        description: "",
+      });
+    }
+  }, [openAddDialog, form]);
   return (
     <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
       <DialogContent className="sm:max-w-[425px]">
@@ -177,6 +177,40 @@ const AddProductDialog = ({
                     </FormItem>
                   )}
                 />
+              </div>
+              <div>
+                <label>Selected Colors</label>
+                <div className="flex flex-wrap items-center space-x-2">
+                  {!setTempSelectedColors.length
+                    ? "No Colors Selected"
+                    : tempSelectedColors.map((color) => (
+                        <span
+                          key={color}
+                          className="inline-block h-5 w-5 rounded-full text-xs"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                </div>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <label>Available Colors</label>
+                <div className="flex space-x-2 ">
+                  {COLORS.map((color) => (
+                    <ColoredCircle
+                      key={color}
+                      color={color}
+                      onClick={() => {
+                        if (tempSelectedColors.includes(color)) {
+                          setTempSelectedColors((prev) =>
+                            prev.filter((item) => item !== color),
+                          );
+                          return;
+                        }
+                        setTempSelectedColors((prev) => [...prev, color]);
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
             <DialogFooter>
